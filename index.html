@@ -236,8 +236,6 @@ button.cell.lv-mastered { color: #fff; }
 .how-icon { font-size: 28px; line-height: 1.2; }
 .how-card h3 { font-size: 18px; }
 .how-card p { margin: 4px 0 0; color: var(--muted); }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.chips span { padding: 2px 10px; border-radius: 12px; background: var(--good-soft); font-size: 14px; font-weight: 500; }
 .streak-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 8px; margin-top: 8px; font-size: 15px; color: var(--muted); }
 
 /* Tests */
@@ -876,8 +874,6 @@ function renderHow() {
     ${topBar('איך זה עובד')}
     <div class="how">
       ${card('🗓️', `כל יום ${DAILY_GOAL} משימות קצרות`, '<p>כמה דקות ביום, וזה הכול. אם תרצי, אפשר גם יותר.</p>')}
-      ${card('⭐', 'מתי יודעים תרגיל?', `<p>כשעונים עליו נכון ב־${MASTERY_STREAK} ימים שונים. ככה הוא נשאר בזיכרון לתמיד.</p>
-        <div class="chips"><span>היום</span><span>מחר</span><span>אחרי עוד 3 ימים</span><span>אחרי עוד שבוע</span></div>`)}
       ${card('🔓', 'שלבים מהקל לקשה', '<p>כל שלב בנוי על מה שכבר למדת, וככה גם התרגילים הקשים נעשים קלים. בקצב שלך.</p>')}
       ${card('💛', 'טעות זה בסדר', '<p>התרגיל פשוט יחזור מחר, ואז תכירי אותו טוב יותר.</p>')}
     </div>
@@ -1073,14 +1069,11 @@ function detailHTML() {
     ${strategyHTML(strategyFor(a, b, progress), a, b)}
     <button class="btn primary" data-action="free">✍️ לתרגל את התרגיל</button>`;
 }
-// How many of the 4 spaced days are done, and how many are left
+// Progress pips toward mastery, with soft text (no day counts shown to the player)
 function streakHTML(f) {
   if (!f.tries) return '';
   const n = Math.min(f.streak, MASTERY_STREAK);
-  const left = MASTERY_STREAK - n;
-  const text = levelOf(f) === 'mastered'
-    ? 'בשליטה ✓'
-    : `${n ? `ענית נכון ב־${n} מתוך ${MASTERY_STREAK} ימים. ` : ''}${left === 1 ? 'עוד יום אחד' : `עוד ${left} ימים`} והוא בשליטה`;
+  const text = levelOf(f) === 'mastered' ? 'בשליטה ✓' : 'כל פעם שעונים נכון ביום חדש, הוא מתחזק';
   return `<div class="streak-line">${pipsHTML(n, MASTERY_STREAK)}<span>${text}</span></div>`;
 }
 function markSelected() {
