@@ -50,7 +50,6 @@
 - במכוון לא מוצגים מרוץ זמן, משחק "הפוך", שיאים או משחקי בונוס.
 
 ## פרסום
-- קוד המקור ב־GitHub: https://github.com/sharon2202/multiplication-game. אחרי כל commit מריצים `git push`.
-- גרסה מפורסמת (פרטית, דורשת חשבון Claude): https://claude.ai/artifact/2q6JjTTSioUeMhC6jgmEC2. לעדכן מפרסמים את `index.html` לאותה כתובת.
-- רעיון שעוד לא בוצע: אירוח ציבורי ב־Cloudflare Pages כדי שילדות בלי חשבון Claude יוכלו לשחק. מעלים רק את `index.html`.
+- המאגר ציבורי: https://github.com/sharon2202/multiplication-game. לא מכניסים לקבצים או להודעות של Git שמות או פרטים אישיים.
+- המשחק ציבורי ב־GitHub Pages מהענף `main`: https://sharon2202.github.io/multiplication-game/ (לא צריך חשבון). כל `git push` מעדכן את האתר תוך דקה בערך, ולכן מריצים את הבדיקות לפני push שמשנה את `index.html`.
 - רעיון שנדחה כרגע: פרופילים או חשבונות לכל ילדה. ההתקדמות כבר נשמרת בנפרד בכל מכשיר.
