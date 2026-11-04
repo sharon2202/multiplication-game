@@ -1,0 +1,1425 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>לוח הכפל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FFF8EE;
+  --surface: #FFFFFF;
+  --ink: #2B2340;
+  --muted: #6B6480;
+  --line: #F0E4D4;
+  --primary: #FF7A45;
+  --primary-ink: #FFFFFF;
+  --accent: #6C5CE7;
+  --good: #22A060;
+  --good-soft: #DDF5E7;
+  --bad: #E5484D;
+  --bad-soft: #FDE4E4;
+  --star: #FFB800;
+  --lv-new: #EFEAE2;
+  --lv-learning: #FFB9AE;
+  --lv-strengthening: #FFDE85;
+  --lv-mastered: #45BE78;
+  --shadow: 0 4px 0 rgba(43, 35, 64, 0.08);
+  --play: linear-gradient(135deg, #FF8A50, #FF5E62);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1C1828;
+    --surface: #2A2438;
+    --ink: #F4F0FF;
+    --muted: #A9A1BF;
+    --line: #3A3350;
+    --good-soft: #1F4031;
+    --bad-soft: #4A2328;
+    --lv-new: #3A3350;
+    --lv-learning: #8E3F3F;
+    --lv-strengthening: #8C6E1E;
+    --lv-mastered: #27A35E;
+    --shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1C1828;
+  --surface: #2A2438;
+  --ink: #F4F0FF;
+  --muted: #A9A1BF;
+  --line: #3A3350;
+  --good-soft: #1F4031;
+  --bad-soft: #4A2328;
+  --lv-new: #3A3350;
+  --lv-learning: #8E3F3F;
+  --lv-strengthening: #8C6E1E;
+  --lv-mastered: #27A35E;
+  --shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Rubik", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+#app { max-width: 640px; margin: 0 auto; padding: 16px 16px 40px; }
+h1, h2, h3 { margin: 0; line-height: 1.2; }
+section { margin-top: 22px; }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+
+/* Home */
+.home-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-top: 8px; }
+.home-head h1 { font-size: 36px; font-weight: 800; }
+.sub { margin: 4px 0 0; color: var(--muted); }
+.icon-btn {
+  width: 48px; height: 48px; border-radius: 14px; flex: none;
+  background: var(--surface); box-shadow: var(--shadow); font-size: 22px;
+  display: grid; place-items: center;
+}
+.path { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 8px; }
+.stop {
+  width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  font-weight: 800; font-size: 15px; background: var(--lv-new); color: var(--muted);
+}
+.stop.done { background: var(--good); color: #fff; font-size: 22px; }
+.stop.now { background: var(--accent); color: #fff; box-shadow: 0 0 0 5px rgba(108, 92, 231, 0.25); animation: glow 1.4s infinite alternate; }
+@keyframes glow { to { box-shadow: 0 0 0 9px rgba(108, 92, 231, 0.12); } }
+.stage-card { padding: 16px 18px; margin-top: 18px; }
+.stage-card .label { color: var(--muted); font-size: 15px; }
+.stage-card h2 { font-size: 24px; margin: 2px 0 10px; }
+.count { color: var(--muted); font-size: 15px; margin-top: 6px; }
+.due-note { margin-top: 12px; text-align: center; font-weight: 500; }
+.play {
+  display: block; width: 100%; margin-top: 16px; padding: 22px; border-radius: 24px;
+  background: var(--play); color: #fff; font-size: 30px; font-weight: 800;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18); transition: transform .1s;
+}
+.play:active { transform: translateY(4px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18); }
+.board-link { display: block; width: 100%; margin-top: 12px; }
+.summary { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-top: 16px; font-size: 15px; color: var(--muted); }
+.summary b { color: var(--ink); }
+.head-btns { display: flex; gap: 8px; }
+.goals { padding: 14px 16px; margin-top: 18px; }
+.goal-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; }
+.pips { display: inline-flex; gap: 5px; }
+.pips i { width: 14px; height: 14px; border-radius: 50%; display: block; background: var(--line); }
+.pips i.on { background: var(--good); }
+.week { display: flex; justify-content: space-between; gap: 4px; margin-top: 12px; }
+.wd {
+  width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 14px; font-weight: 700; background: var(--lv-new); color: var(--muted);
+}
+.wd.on { background: var(--good); color: #fff; }
+.wd.today { box-shadow: 0 0 0 3px var(--accent); }
+.wd.future { opacity: .5; }
+footer { margin-top: 28px; text-align: center; }
+.link-btn { color: var(--muted); text-decoration: underline; padding: 10px; font-size: 15px; }
+
+/* Play */
+.topbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.topbar h2 { flex: 1; font-size: 21px; text-align: center; }
+.progress { height: 12px; background: var(--line); border-radius: 6px; overflow: hidden; }
+.bar { height: 100%; width: 0; background: var(--accent); border-radius: 6px; transition: width .3s; }
+.bar.good { background: var(--good); }
+.tag { min-height: 26px; margin-top: 10px; text-align: center; font-size: 15px; font-weight: 500; color: var(--accent); }
+.card { background: var(--surface); border-radius: 22px; box-shadow: var(--shadow); }
+.question { position: relative; padding: 26px 12px; text-align: center; margin-top: 6px; }
+.eq { font-size: clamp(40px, 12vw, 60px); font-weight: 800; letter-spacing: 1px; }
+.answer {
+  display: inline-block; min-width: 2.2em; border-bottom: 5px solid var(--accent);
+  color: var(--accent);
+}
+.feedback { min-height: 32px; text-align: center; font-size: 19px; font-weight: 700; margin: 10px 0; }
+.good { color: var(--good); }
+.bad { color: var(--bad); }
+.question.flash-good { animation: flashGood .5s; }
+.question.flash-bad { animation: shake .4s; }
+@keyframes flashGood { 0% { background: var(--good-soft); } 100% { background: var(--surface); } }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); background: var(--bad-soft); }
+  25% { transform: translateX(-8px); } 75% { transform: translateX(8px); }
+}
+.pop {
+  position: absolute; top: 8px; left: 50%; font-size: 40px; pointer-events: none;
+  animation: pop .8s ease-out forwards;
+}
+@keyframes pop {
+  0% { transform: translate(-50%, 20px) scale(.4); opacity: 0; }
+  30% { opacity: 1; transform: translate(-50%, -10px) scale(1.2); }
+  100% { transform: translate(-50%, -50px) scale(1); opacity: 0; }
+}
+.idk {
+  display: block; width: 100%; height: 48px; margin-bottom: 10px; border-radius: 14px;
+  border: 2px dashed var(--line); color: var(--muted); font-weight: 500;
+}
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.key {
+  height: 62px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow);
+  font-size: 28px; font-weight: 700; transition: transform .08s;
+}
+.key:active { transform: scale(.95); }
+.key.ok { background: var(--good); color: #fff; }
+.key.del { color: var(--muted); }
+
+/* Explanation */
+.explain { padding: 18px 16px; text-align: center; }
+.explain .eq { font-size: 36px; }
+.tip { margin: 6px 0; font-weight: 500; }
+.dots { display: inline-grid; gap: 3px; margin: 8px 0; }
+.dots .row { display: flex; gap: 3px; padding: 2px 4px; border-radius: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; display: block; background: var(--accent); }
+.dots .c2 i { background: var(--primary); }
+.dots .ghost i { background: var(--line); }
+.dots .minus { background: var(--bad-soft); }
+.dots .minus i { background: var(--bad); opacity: .35; }
+.steps { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 6px; }
+.steps li { padding: 8px 10px; border-radius: 12px; background: var(--bg); font-size: 19px; animation: stepIn .3s both; }
+.steps .lbl { color: var(--muted); font-size: 16px; margin-inline-end: 6px; }
+.steps b { font-weight: 800; }
+@keyframes stepIn { from { opacity: 0; transform: translateY(6px); } }
+.final { font-size: 22px; font-weight: 800; color: var(--good); margin: 4px 0 2px; }
+.explain .btn { margin-top: 12px; min-width: 60%; }
+
+/* Results */
+.results { text-align: center; padding-top: 24px; }
+.big-top { font-size: 72px; line-height: 1; margin-bottom: 14px; animation: starIn .5s both; }
+@keyframes starIn { 0% { transform: scale(0) rotate(-90deg); } 70% { transform: scale(1.3); } 100% { transform: scale(1); } }
+.results h2 { font-size: 28px; font-weight: 800; }
+.res-lines { list-style: none; padding: 0; margin: 18px 0; font-size: 19px; }
+.res-lines li { padding: 5px 0; }
+.res-lines b { color: var(--primary); }
+.cheer { color: var(--muted); margin: 0 0 16px; }
+.res-stage { padding: 14px 16px; margin-bottom: 16px; text-align: right; }
+.res-actions { display: grid; gap: 10px; }
+.btn {
+  height: 56px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow);
+  font-weight: 700; font-size: 19px; padding: 0 20px;
+}
+.btn.primary { background: var(--primary); color: var(--primary-ink); }
+
+/* Board */
+.board { display: grid; grid-template-columns: repeat(11, 1fr); gap: 3px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 6px;
+  font-size: clamp(11px, 3.3vw, 17px); font-weight: 700; padding: 0;
+}
+button.cell { color: #2B2340; }
+.cell.head { font-weight: 800; color: var(--muted); }
+.cell.corner { color: var(--accent); }
+.lv-new { background: var(--lv-new); }
+button.cell.lv-new { color: var(--muted); }
+.lv-learning { background: var(--lv-learning); }
+.lv-strengthening { background: var(--lv-strengthening); }
+.lv-mastered { background: var(--lv-mastered); }
+button.cell.lv-mastered { color: #fff; }
+.cell.sel { outline: 3px solid var(--accent); outline-offset: 1px; position: relative; z-index: 1; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin: 12px 0 4px; font-size: 14px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+.board-note { text-align: center; font-size: 14px; color: var(--muted); margin: 4px 0 12px; }
+.lvl { display: inline-block; padding: 2px 12px; border-radius: 12px; font-weight: 700; font-size: 15px; color: #2B2340; }
+
+/* How it works */
+.how { display: grid; gap: 10px; }
+.how-card { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; }
+.how-icon { font-size: 28px; line-height: 1.2; }
+.how-card h3 { font-size: 18px; }
+.how-card p { margin: 4px 0 0; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.chips span { padding: 2px 10px; border-radius: 12px; background: var(--good-soft); font-size: 14px; font-weight: 500; }
+.streak-line { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 8px; margin-top: 8px; font-size: 15px; color: var(--muted); }
+
+/* Tests */
+.test-row { padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+
+@media (max-width: 380px) {
+  .home-head h1 { font-size: 30px; }
+  .stop { width: 52px; height: 52px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+'use strict';
+
+/* =====================================================================
+   1. FACTS AND STAGES
+   55 facts: 7×8 and 8×7 share the key "7-8"; both forms are asked.
+   ===================================================================== */
+const N = 10;
+const pairKey = (a, b) => (a <= b ? `${a}-${b}` : `${b}-${a}`);
+const keyPair = (k) => k.split('-').map(Number);
+
+// Easy to hard; each pair (a ≤ b) belongs to the first stage whose test matches
+const STAGES = [
+  { short: '1·10', name: 'כפול 1 וכפול 10', test: (a, b) => a === 1 || b === 10 },
+  { short: '×2', name: 'טבלת ×2', test: (a) => a === 2 },
+  { short: '×5', name: 'טבלת ×5', test: (a, b) => a === 5 || b === 5 },
+  { short: '3×3', name: 'מספר כפול עצמו', test: (a, b) => a === b },
+  { short: '×3', name: 'טבלת ×3', test: (a) => a === 3 },
+  { short: '×4', name: 'טבלת ×4', test: (a) => a === 4 },
+  { short: '×9', name: 'טבלת ×9', test: (a, b) => b === 9 },
+  { short: '7×8', name: 'התרגילים האחרונים', test: () => true },
+];
+const FACTS = [];
+STAGES.forEach((s) => { s.keys = []; });
+for (let a = 1; a <= N; a++) {
+  for (let b = a; b <= N; b++) {
+    const k = pairKey(a, b);
+    FACTS.push(k);
+    STAGES.find((s) => s.test(a, b)).keys.push(k);
+  }
+}
+
+/* =====================================================================
+   2. TIME — reviews are scheduled in real calendar days, not rounds
+   ===================================================================== */
+const DAY_MS = 86400000;
+function startOfDay(ts) { const d = new Date(ts); d.setHours(0, 0, 0, 0); return d.getTime(); }
+function addDays(dayStart, n) { const d = new Date(dayStart); d.setDate(d.getDate() + n); return d.getTime(); }
+const daysBetween = (from, to) => Math.round((startOfDay(to) - startOfDay(from)) / DAY_MS);
+
+// Daily and weekly goals: a clear frame for her, they never change mastery
+const DAILY_GOAL = 2;       // missions per day
+const WEEKLY_GOAL = 5;      // days with at least one mission, Sunday to Saturday; resets weekly
+const PLAY_DAYS_KEPT = 60;
+const missionsOn = (p, dayStart) => (p.playDays && p.playDays[dayStart]) || 0;
+const missionsToday = (p, now) => missionsOn(p, startOfDay(now));
+function weekDays(p, now) {
+  const today = startOfDay(now);
+  const sunday = addDays(today, -new Date(today).getDay());
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = addDays(sunday, i);
+    return { day: d, missions: missionsOn(p, d), today: d === today, future: d > today };
+  });
+}
+const weekCount = (p, now) => weekDays(p, now).filter((d) => d.missions > 0).length;
+function logMission(p, now) {
+  const today = startOfDay(now);
+  p.playDays[today] = missionsOn(p, today) + 1;
+  const oldest = addDays(today, -PLAY_DAYS_KEPT);
+  for (const k of Object.keys(p.playDays)) if (+k < oldest) delete p.playDays[k];
+}
+
+/* =====================================================================
+   3. MASTERY AND SPACED REVIEW
+   - "Retrieval": first time a fact is asked in a round, before any help.
+     Only retrievals change mastery.
+   - "Practice": answering after an explanation, or the in-round retry.
+   - "Free": practice from the board. Recorded, never changes mastery.
+   A spaced success = a correct retrieval on a new day, once the review is due.
+   ===================================================================== */
+const INTERVALS = [1, 3, 7, 14, 30];   // days after the 1st, 2nd, 3rd... spaced success
+const MASTERY_STREAK = 4;              // d0 → d1 → d4 → d11: includes a 7-day review
+const STAGE_PASS = 0.8;                // share of stage facts that must be familiar
+const LEVEL_NAMES = { new: 'טרם נבדק', learning: 'בלמידה', strengthening: 'בהתחזקות', mastered: 'בשליטה' };
+
+const BLANK_FACT = Object.freeze({
+  tries: 0, attempts: 0, correct: 0, wrong: 0, helped: 0, practiceCorrect: 0, freeCorrect: 0,
+  streak: 0, lastResult: null, lastSeen: null, lastSuccess: null, due: null, times: [], level: 'new',
+});
+const blankFact = () => ({ ...BLANK_FACT, times: [] });
+const peekFact = (p, k) => p.facts[k] || BLANK_FACT;
+function getFact(p, k) { return p.facts[k] || (p.facts[k] = blankFact()); }
+
+function levelOf(f) {
+  if (!f.tries) return 'new';
+  if (f.lastResult !== 'correct') return 'learning';
+  return f.streak >= MASTERY_STREAK ? 'mastered' : 'strengthening';
+}
+const isFamiliar = (f) => f.tries > 0 && f.lastResult === 'correct';
+const isDue = (f, now) => f.tries > 0 && f.due != null && now >= f.due;
+
+function recordAttempt(p, k, { kind, correct, dontKnow = false, ms = null, now }) {
+  const f = getFact(p, k);
+  const before = levelOf(f);
+  const res = { strengthened: false, mastered: false };
+  const ok = correct && !dontKnow;
+  f.attempts++;
+  f.lastSeen = now;
+  if (ms != null) { f.times.push(Math.round(ms)); if (f.times.length > 5) f.times.shift(); }
+
+  if (kind === 'practice' || kind === 'free') {
+    if (ok) f[kind === 'free' ? 'freeCorrect' : 'practiceCorrect']++;
+    else f.wrong++;
+    f.level = levelOf(f);
+    return res;
+  }
+
+  f.tries++;
+  const today = startOfDay(now);
+  if (ok) {
+    f.correct++;
+    const newDay = f.lastSuccess == null || startOfDay(f.lastSuccess) < today;
+    const dueNow = f.due == null || now >= f.due;
+    if (f.streak === 0 || (newDay && dueNow)) {
+      f.streak++;
+      f.due = addDays(today, INTERVALS[Math.min(f.streak - 1, INTERVALS.length - 1)]);
+      res.strengthened = true;
+    }
+    f.lastSuccess = now;
+    f.lastResult = 'correct';
+  } else {
+    // Keep the history, but weaken and bring it back tomorrow
+    f.wrong++;
+    f.helped++;
+    f.lastResult = 'wrong';
+    f.streak = Math.max(0, f.streak - 2);
+    f.due = addDays(today, 1);
+  }
+  f.level = levelOf(f);
+  res.mastered = f.level === 'mastered' && before !== 'mastered';
+  return res;
+}
+
+function levelCounts(p) {
+  const c = { new: 0, learning: 0, strengthening: 0, mastered: 0 };
+  FACTS.forEach((k) => { c[levelOf(peekFact(p, k))]++; });
+  return c;
+}
+const familiarCount = (p) => FACTS.filter((k) => isFamiliar(peekFact(p, k))).length;
+const dueCount = (p, now) => FACTS.filter((k) => isDue(peekFact(p, k), now)).length;
+
+/* =====================================================================
+   4. STAGE PROGRESS
+   Pass when every fact in the stage was tried and ≥80% are familiar
+   (last retrieval correct). A single hard fact never blocks; weak facts
+   keep coming back through review after the stage is passed.
+   ===================================================================== */
+function stageStatus(p, i) {
+  const keys = STAGES[i].keys;
+  const tried = keys.filter((k) => peekFact(p, k).tries > 0).length;
+  const familiar = keys.filter((k) => isFamiliar(peekFact(p, k))).length;
+  const need = Math.max(1, Math.floor(keys.length * STAGE_PASS));
+  return { total: keys.length, tried, familiar, need, passed: tried === keys.length && familiar >= need };
+}
+function advanceStages(p) {
+  const done = [];
+  while (p.stage < STAGES.length && stageStatus(p, p.stage).passed) {
+    done.push(p.stage);
+    p.stage++;
+  }
+  return done;
+}
+
+/* =====================================================================
+   5. QUESTION SELECTION (one question at a time, adaptive)
+   Categories: due · learning · new (current stage) · stage · familiar.
+   Interleaves hard and easy, caps new facts (grows when she shows she
+   knows them, stops when she struggles), caps due reviews after absence.
+   ===================================================================== */
+const ROUND_SIZE = 10;       // independent retrievals per round
+const MAX_ATTEMPTS = 16;     // including explanations' practice and retries
+const MIN_ROUND = 6;
+const DUE_CAP = 5;
+const LEARNING_CAP = 4;
+const NEW_CAP = 3;
+const NEW_CAP_STRUGGLING = 1;
+const WRONG_STOP_NEW = 3;
+const MAX_RETRIES = 2;
+const RETRY_GAP = 3;
+const HARD = new Set(['new', 'learning', 'practice']);
+
+function mulberry32(seed) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function shuffle(arr, rng = Math.random) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function makeQ(key, cat, rng = Math.random) {
+  let [a, b] = keyPair(key);
+  if (rng() < 0.5) [a, b] = [b, a];
+  const kind = cat === 'practice' ? 'practice' : cat === 'free' ? 'free' : 'retrieval';
+  return { key, a, b, ans: a * b, cat, kind };
+}
+
+function startRound(p, now, opts = {}) {
+  return {
+    free: opts.freeKey || null,
+    asked: [], kinds: [], hard: [], total: 0, independent: 0, independentCorrect: 0,
+    retries: [], retryCount: {}, seen: new Set(),
+    counts: { due: 0, learning: 0, new: 0, stage: 0, familiar: 0 },
+    newCap: p.lastAccuracy != null && p.lastAccuracy < 0.6 ? NEW_CAP_STRUGGLING : NEW_CAP,
+    wrongs: 0,
+    strengthened: new Set(), mastered: new Set(), wrongKeys: new Set(), newKeys: new Set(),
+  };
+}
+
+function categorize(round, p, now, rng = Math.random) {
+  const last = round.asked[round.asked.length - 1];
+  const cur = STAGES[p.stage];
+  const out = { due: [], learning: [], new: [], stage: [], familiar: [] };
+  for (const k of FACTS) {
+    if (round.seen.has(k) || k === last) continue;
+    const f = peekFact(p, k);
+    if (!f.tries) { if (cur && cur.keys.includes(k)) out.new.push(k); continue; }
+    if (f.lastResult !== 'correct') out.learning.push(k);
+    else if (isDue(f, now)) out.due.push(k);
+    else if (cur && cur.keys.includes(k) && f.level !== 'mastered') out.stage.push(k);
+    else out.familiar.push(k);
+  }
+  out.due.sort((x, y) => peekFact(p, x).due - peekFact(p, y).due);
+  out.learning.sort((x, y) => peekFact(p, x).lastSeen - peekFact(p, y).lastSeen);
+  out.new = shuffle(out.new, rng);
+  out.stage = shuffle(out.stage, rng);
+  out.familiar = shuffle(out.familiar, rng);
+  return out;
+}
+
+function pickCategory(round, cands) {
+  const c = round.counts;
+  if (c.due >= DUE_CAP) cands.due = [];
+  if (c.learning >= LEARNING_CAP) cands.learning = [];
+  if (c.new >= round.newCap || round.wrongs >= WRONG_STOP_NEW) cands.new = [];
+  const recent = round.hard.slice(-2);
+  const hadEasy = round.kinds.some((x) => x === 'familiar' || x === 'stage');
+  const needEasy = (recent.length === 2 && recent.every(Boolean)) || (!hadEasy && round.independent >= 4);
+  let order = needEasy ? ['familiar', 'due', 'stage', 'learning', 'new'] : ['due', 'learning', 'new', 'stage', 'familiar'];
+  // Space out new facts, unless she is clearly handling them
+  if (round.hard[round.hard.length - 1]) order = order.filter((x) => x !== 'new').concat('new');
+  const cat = order.find((x) => cands[x].length);
+  return cat ? { key: cands[cat][0], cat } : null;
+}
+
+function takeRetry(round, ready) {
+  const last = round.asked[round.asked.length - 1];
+  const i = round.retries.findIndex((r) => r.key !== last && (!ready || r.at <= round.total));
+  return i < 0 ? null : round.retries.splice(i, 1)[0].key;
+}
+
+function nextQuestion(round, p, now, rng = Math.random) {
+  if (round.free) return round.total === 0 ? makeQ(round.free, 'free', rng) : null;
+  if (round.total >= MAX_ATTEMPTS) return null;
+  let k = takeRetry(round, true);
+  if (k) return makeQ(k, 'practice', rng);
+  if (round.independent >= ROUND_SIZE) {
+    k = takeRetry(round, false);
+    return k ? makeQ(k, 'practice', rng) : null;
+  }
+  const cands = categorize(round, p, now, rng);
+  let pick = pickCategory(round, cands);
+  // Very short round and still doing fine: allow one more new fact
+  if (!pick && round.independent < MIN_ROUND && round.wrongs < WRONG_STOP_NEW) {
+    const extra = categorize(round, p, now, rng).new;
+    if (extra.length) pick = { key: extra[0], cat: 'new' };
+  }
+  if (pick) return makeQ(pick.key, pick.cat, rng);
+  k = takeRetry(round, false);
+  return k ? makeQ(k, 'practice', rng) : null;
+}
+
+function scheduleRetry(round, key) {
+  round.retryCount[key] = (round.retryCount[key] || 0) + 1;
+  if (round.retryCount[key] <= MAX_RETRIES) round.retries.push({ key, at: round.total + RETRY_GAP });
+}
+
+function answerQuestion(round, p, q, { correct, dontKnow = false, ms = null, now }) {
+  const ok = correct && !dontKnow;
+  const r = recordAttempt(p, q.key, { kind: q.kind, correct, dontKnow, ms, now });
+  round.asked.push(q.key);
+  round.kinds.push(q.cat);
+  // Hard = hard for her: a new fact she answers right is not a reason for an easy break
+  round.hard.push(q.kind === 'practice' || (HARD.has(q.cat) && !ok));
+  round.total++;
+  if (q.kind === 'retrieval') {
+    round.seen.add(q.key);
+    round.independent++;
+    round.counts[q.cat]++;
+    if (q.cat === 'new') { round.newKeys.add(q.key); if (ok) round.newCap++; }
+    if (ok) round.independentCorrect++;
+    else round.wrongs++;
+  }
+  if (r.strengthened) round.strengthened.add(q.key);
+  if (r.mastered) round.mastered.add(q.key);
+  if (!ok && q.kind !== 'free') {
+    round.wrongKeys.add(q.key);
+    scheduleRetry(round, q.key);
+  }
+  return { ok, needsHelp: !ok };
+}
+
+// Immediate independent practice right after an explanation
+function answerHelpPractice(round, p, q, { correct, ms = null, now }) {
+  recordAttempt(p, q.key, { kind: q.kind === 'free' ? 'free' : 'practice', correct, ms, now });
+  round.asked.push(q.key);
+  round.kinds.push('practice');
+  round.hard.push(true);
+  round.total++;
+  return correct;
+}
+
+function finishRound(round, p, now) {
+  p.rounds++;
+  p.lastPlayed = now;
+  p.lastAccuracy = round.independent ? round.independentCorrect / round.independent : null;
+  logMission(p, now);
+  const doneStages = advanceStages(p);
+  return {
+    independent: round.independent,
+    correct: round.independentCorrect,
+    strengthened: [...round.strengthened].filter((k) => !round.newKeys.has(k)).length,
+    newMet: round.newKeys.size,
+    mastered: round.mastered.size,
+    toReview: round.wrongKeys.size,
+    doneStages,
+  };
+}
+
+/* =====================================================================
+   6. STRATEGIES — one clear strategy per fact, built from easier facts.
+   Steps are data, so tests can verify every number.
+   ===================================================================== */
+const stepValue = (s) =>
+  s.t === 'mul' ? s.x * s.y : s.t === 'add' ? s.x + s.y : s.t === 'sub' ? s.x - s.y : s.t === 'half' ? s.x / 2 : s.list.reduce((a, b) => a + b, 0);
+
+function groupsStrategy(a, b) {
+  const g = Math.min(a, b), s = Math.max(a, b);
+  return {
+    id: 'groups',
+    tip: g === 1 ? `קבוצה אחת של ${s}.` : `${g} קבוצות של ${s}.`,
+    steps: [g === 1 ? { t: 'mul', x: 1, y: s, label: '' } : { t: 'sum', list: Array(g).fill(s), label: '' }],
+    visual: { rows: g, cols: s, parts: [{ n: g, cls: 'c1' }] },
+    uses: [],
+  };
+}
+
+function strategyFor(a, b, p) {
+  const has = (n) => a === n || b === n;
+  const other = (n) => (a === n ? b : a);
+  let s;
+  if (has(1)) {
+    const o = other(1);
+    s = { id: 'x1', tip: 'כל מספר כפול 1 נשאר בדיוק אותו מספר.', steps: [{ t: 'mul', x: 1, y: o, label: '' }], visual: { rows: 1, cols: o, parts: [{ n: 1, cls: 'c1' }] }, uses: [] };
+  } else if (has(10)) {
+    const o = other(10);
+    s = { id: 'x10', tip: `כפול 10: כותבים ${o} ומוסיפים 0 בסוף.`, steps: [{ t: 'mul', x: o, y: 10, label: '' }], visual: { rows: 10, cols: o, parts: [{ n: 10, cls: 'c1' }] }, uses: [] };
+  } else if (has(2)) {
+    const o = other(2);
+    s = { id: 'x2', tip: `כפול 2 זה פשוט ${o} ועוד ${o}.`, steps: [{ t: 'add', x: o, y: o, label: '' }], visual: { rows: 2, cols: o, parts: [{ n: 1, cls: 'c1' }, { n: 1, cls: 'c2' }] }, uses: [] };
+  } else if (has(5)) {
+    const o = other(5);
+    s = { id: 'x5', tip: 'כפול 5 זה חצי מכפול 10.', steps: [{ t: 'mul', x: 10, y: o, label: 'קודם כפול 10:' }, { t: 'half', x: 10 * o, label: 'ועכשיו חצי:' }], visual: { rows: 10, cols: o, parts: [{ n: 5, cls: 'c1' }, { n: 5, cls: 'ghost' }] }, uses: [pairKey(10, o)] };
+  } else if (has(9)) {
+    const o = other(9);
+    s = { id: 'x9', tip: `כפול 9: מחשבים כפול 10, ואז מורידים ${o} אחד.`, steps: [{ t: 'mul', x: 10, y: o, label: 'קודם כפול 10:' }, { t: 'sub', x: 10 * o, y: o, label: `מורידים ${o}:` }], visual: { rows: 10, cols: o, parts: [{ n: 9, cls: 'c1' }, { n: 1, cls: 'minus' }] }, uses: [pairKey(10, o)] };
+  } else if (has(4)) {
+    const o = other(4);
+    s = { id: 'x4', tip: 'כפול 4: מחשבים כפול 2, ואז מכפילים את התוצאה.', steps: [{ t: 'mul', x: 2, y: o, label: 'קודם כפול 2:' }, { t: 'add', x: 2 * o, y: 2 * o, label: 'מכפילים:' }], visual: { rows: 4, cols: o, parts: [{ n: 2, cls: 'c1' }, { n: 2, cls: 'c2' }] }, uses: [pairKey(2, o)] };
+  } else if (has(3)) {
+    const o = other(3);
+    s = { id: 'x3', tip: `כפול 3: מחשבים כפול 2, ומוסיפים עוד ${o} אחד.`, steps: [{ t: 'mul', x: 2, y: o, label: 'קודם כפול 2:' }, { t: 'add', x: 2 * o, y: o, label: `ועוד ${o}:` }], visual: { rows: 3, cols: o, parts: [{ n: 2, cls: 'c1' }, { n: 1, cls: 'c2' }] }, uses: [pairKey(2, o)] };
+  } else if (has(6)) {
+    const o = other(6);
+    s = { id: 'x6', tip: `כפול 6: מחשבים 5 פעמים ${o}, ומוסיפים עוד ${o} אחד.`, steps: [{ t: 'mul', x: 5, y: o, label: 'קודם 5 פעמים:' }, { t: 'add', x: 5 * o, y: o, label: `ועוד ${o}:` }], visual: { rows: 6, cols: o, parts: [{ n: 5, cls: 'c1' }, { n: 1, cls: 'c2' }] }, uses: [pairKey(5, o)] };
+  } else if (has(7)) {
+    const o = other(7);
+    s = { id: 'x7', tip: `כפול 7: מחשבים 5 פעמים ${o}, ועוד 2 פעמים ${o}.`, steps: [{ t: 'mul', x: 5, y: o, label: '5 פעמים:' }, { t: 'mul', x: 2, y: o, label: '2 פעמים:' }, { t: 'add', x: 5 * o, y: 2 * o, label: 'מחברים:' }], visual: { rows: 7, cols: o, parts: [{ n: 5, cls: 'c1' }, { n: 2, cls: 'c2' }] }, uses: [pairKey(5, o), pairKey(2, o)] };
+  } else {
+    s = { id: 'x8', tip: 'כפול 8: מחשבים 4 פעמים 8, ואז מכפילים את התוצאה.', steps: [{ t: 'mul', x: 4, y: 8, label: 'קודם 4 פעמים:' }, { t: 'add', x: 32, y: 32, label: 'מכפילים:' }], visual: { rows: 8, cols: 8, parts: [{ n: 4, cls: 'c1' }, { n: 4, cls: 'c2' }] }, uses: [pairKey(4, 8)] };
+  }
+  // Build only on facts she has met; otherwise use plain groups
+  if (p && s.uses.some((k) => !peekFact(p, k).tries)) return groupsStrategy(a, b);
+  return s;
+}
+
+/* =====================================================================
+   7. STORAGE — versioned; migrates v2 data, never deletes old keys
+   ===================================================================== */
+const STORE_KEY = 'kefel-progress-v3';
+const V2_KEY = 'kefel-progress-v2';
+function defaultProgress(now) {
+  return { version: 3, facts: {}, stage: 0, rounds: 0, lastAccuracy: null, lastPlayed: null, muted: false, createdAt: now, playDays: {}, howSeen: false };
+}
+function migrateV2(old, now) {
+  const p = defaultProgress(now);
+  const today = startOfDay(now);
+  p.muted = !!old.muted;
+  p.rounds = old.round || 0;
+  for (const [k, o] of Object.entries(old.facts || {})) {
+    if (!o || !o.seen || !FACTS.includes(k)) continue;
+    const f = blankFact();
+    f.tries = f.attempts = o.seen;
+    if (o.box >= 2) { f.correct = 1; f.streak = 1; f.lastResult = 'correct'; }
+    else { f.wrong = 1; f.lastResult = 'wrong'; }
+    f.due = today;
+    f.level = levelOf(f);
+    p.facts[k] = f;
+  }
+  // v2 had ×1 and ×10 as two separate stages
+  p.stage = Math.max(0, Math.min(STAGES.length, (old.stage || 0) - 1));
+  return p;
+}
+function loadProgress(storage, now) {
+  try {
+    const raw = storage.getItem(STORE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && d.version === 3) {
+        const p = Object.assign(defaultProgress(now), d);
+        // Saved before daily goals existed: count the last day she played
+        if (!d.playDays && d.lastPlayed) p.playDays[startOfDay(d.lastPlayed)] = 1;
+        return p;
+      }
+    }
+    const old = storage.getItem(V2_KEY);
+    if (old) {
+      const p = migrateV2(JSON.parse(old), now);
+      storage.setItem(STORE_KEY, JSON.stringify(p));
+      return p;
+    }
+  } catch (e) {}
+  return defaultProgress(now);
+}
+function saveProgress(storage, p) {
+  try { storage.setItem(STORE_KEY, JSON.stringify(p)); } catch (e) {}
+}
+
+/* =====================================================================
+   8. UI
+   ===================================================================== */
+const memoryStore = { data: {}, getItem(k) { return this.data[k] ?? null; }, setItem(k, v) { this.data[k] = String(v); } };
+const store = (() => { try { const s = window.localStorage; s.getItem(STORE_KEY); return s; } catch (e) { return memoryStore; } })();
+let progress = loadProgress(store, Date.now());
+const save = () => saveProgress(store, progress);
+
+const app = document.getElementById('app');
+const $ = (s) => app.querySelector(s);
+const $$ = (s) => [...app.querySelectorAll(s)];
+const ui = { screen: 'home', mode: 'play', round: null, q: null, phase: 'answer', input: '', shownAt: 0, helpStep: 0, helpDK: false, strategy: null, summary: null,selectedCell: null, timers: [] };
+
+const PRAISE = ['כל הכבוד!', 'מעולה!', 'נכון!', 'יופי!', 'בדיוק!', 'אלופה!'];
+const CHEERS = [
+  'כל תרגול קטן מחזק את הזיכרון 🧠',
+  'טעויות הן חלק מהלמידה. ככה המוח לומד.',
+  'חזרה בימים הבאים תעזור לזכור עוד יותר טוב.',
+  'מה שקשה היום יהיה קל יותר מחר.',
+  'את משתפרת בכל משימה 🌱',
+];
+const TAGS = {
+  new: '✨ תרגיל חדש · אין לחץ, אפשר לבחור "עוד לא יודעת"',
+  due: '📅 חזרה: בואי נבדוק שזה עוד בזיכרון',
+  learning: '💪 תרגיל שמתאמנים עליו',
+  practice: '🔁 עוד פעם, הפעם בלי עזרה',
+  free: '✍️ תרגול חופשי (לא משנה את רמת השליטה)',
+};
+const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// ---------- Sound ----------
+let audioCtx = null;
+function playSound(type) {
+  if (progress.muted) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const seq = {
+      good: [[660, 0], [880, 0.09]],
+      soft: [[330, 0], [294, 0.12]],
+      win: [[523, 0], [659, 0.12], [784, 0.24], [1047, 0.36]],
+    }[type];
+    const now = audioCtx.currentTime;
+    seq.forEach(([f, t]) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type === 'soft' ? 'triangle' : 'sine';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, now + t);
+      g.gain.exponentialRampToValueAtTime(0.18, now + t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + t + 0.2);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(now + t);
+      o.stop(now + t + 0.22);
+    });
+  } catch (e) {}
+}
+
+// ---------- Helpers ----------
+function setT(fn, ms) { ui.timers.push(setTimeout(fn, ms)); }
+function clearTimers() { ui.timers.forEach(clearTimeout); ui.timers = []; }
+function showScreen(name) {
+  clearTimers();
+  ui.screen = name;
+  renders[name]();
+  window.scrollTo(0, 0);
+}
+const eq = (a, b, c) => `<span dir="ltr">${a} × ${b} = ${c}</span>`;
+const muteBtn = () =>
+  `<button class="icon-btn" data-action="mute" aria-label="${progress.muted ? 'הפעלת צלילים' : 'השתקת צלילים'}">${progress.muted ? '🔇' : '🔊'}</button>`;
+const topBar = (title, back = 'home') =>
+  `<div class="topbar"><button class="icon-btn" data-action="${back}" aria-label="חזרה">→</button><h2>${title}</h2>${muteBtn()}</div>`;
+const keypadHTML = () =>
+  `<div class="keypad" dir="ltr">${['1', '2', '3', '4', '5', '6', '7', '8', '9', 'del', '0', 'ok']
+    .map((k) => {
+      if (k === 'del') return `<button class="key del" data-action="key" data-k="del" aria-label="מחיקה">⌫</button>`;
+      if (k === 'ok') return `<button class="key ok" data-action="key" data-k="ok" aria-label="בדיקה">✓</button>`;
+      return `<button class="key" data-action="key" data-k="${k}">${k}</button>`;
+    })
+    .join('')}</div>`;
+function stageProgressHTML(i) {
+  const s = stageStatus(progress, i);
+  const left = Math.max(0, s.need - s.familiar);
+  return `<div class="progress"><div class="bar good" style="width:${Math.min(100, (s.familiar / s.need) * 100)}%"></div></div>
+    <div class="count">${left === 1 ? 'עוד תרגיל אחד שתדעי, והשלב הבא נפתח 🔓' : left ? `עוד ${left} תרגילים שתדעי, והשלב הבא נפתח 🔓` : s.tried < s.total ? 'כמעט שם! עוד כמה תרגילים חדשים לפגוש' : ''}</div>`;
+}
+function popStar(el) {
+  const s = document.createElement('span');
+  s.className = 'pop';
+  s.textContent = '⭐';
+  el.appendChild(s);
+  setTimeout(() => s.remove(), 850);
+}
+function flash(el, cls) {
+  el.classList.remove('flash-good', 'flash-bad');
+  void el.offsetWidth;
+  el.classList.add(cls);
+}
+function stepHTML(s) {
+  const expr = s.t === 'mul' ? `${s.x} × ${s.y}` : s.t === 'add' ? `${s.x} + ${s.y}` : s.t === 'sub' ? `${s.x} − ${s.y}` : s.t === 'half' ? `${s.x} ÷ 2` : s.list.join(' + ');
+  return `<li>${s.label ? `<span class="lbl">${s.label}</span>` : ''}<span dir="ltr">${expr} = <b>${stepValue(s)}</b></span></li>`;
+}
+function dotsHTML(v) {
+  const rows = [];
+  v.parts.forEach((part) => { for (let i = 0; i < part.n; i++) rows.push(`<div class="row ${part.cls}">${'<i></i>'.repeat(v.cols)}</div>`); });
+  return `<div class="dots" aria-hidden="true">${rows.join('')}</div>`;
+}
+function strategyHTML(s, a, b, visible = s.steps.length) {
+  return `<p class="tip">💡 ${s.tip}</p>
+    <div>${dotsHTML(s.visual)}</div>
+    <ol class="steps">${s.steps.slice(0, visible).map(stepHTML).join('')}</ol>
+    ${visible >= s.steps.length ? `<div class="final">אז ${eq(a, b, a * b)}</div>` : ''}`;
+}
+function reviewText(f, now) {
+  if (!f.tries || f.due == null) return '';
+  const d = daysBetween(now, f.due);
+  return d <= 0 ? 'מחכה לחזרה היום' : d === 1 ? 'חזרה הבאה: מחר' : `חזרה הבאה: בעוד ${d} ימים`;
+}
+
+const WEEK_LETTERS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'];
+const pipsHTML = (on, total) => `<span class="pips" aria-hidden="true">${Array.from({ length: total }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('')}</span>`;
+function goalsHTML(now) {
+  const done = missionsToday(progress, now);
+  const days = weekDays(progress, now);
+  const week = days.filter((d) => d.missions > 0).length;
+  // No count for tomorrow: the number can be large, but each mission takes only a few reviews
+  const tomorrow = dueCount(progress, addDays(startOfDay(now), 1));
+  const todayText = done >= DAILY_GOAL
+    ? `<b class="good">✓ סיימת להיום!</b> <span class="muted">${tomorrow ? 'מחר נבדוק שמה שלמדת נשאר בזיכרון 🧠' : 'מחר ממשיכים עם תרגילים חדשים'}</span>`
+    : `<b>היום:</b> ${done} מתוך ${DAILY_GOAL} משימות`;
+  return `<div class="card goals">
+    <div class="goal-row">${pipsHTML(done, DAILY_GOAL)}<span>${todayText}</span></div>
+    <div class="week">${days.map((d, i) => `<span class="wd${d.missions ? ' on' : ''}${d.today ? ' today' : ''}${d.future ? ' future' : ''}">${WEEK_LETTERS[i]}</span>`).join('')}</div>
+    <div class="count">${week >= WEEKLY_GOAL ? '🎉 עמדת ביעד של השבוע!' : `השבוע: ${week} מתוך ${WEEKLY_GOAL} ימים`}</div>
+  </div>`;
+}
+
+// ---------- Home ----------
+function renderHome() {
+  const now = Date.now();
+  const done = missionsToday(progress, now);
+  const st = progress.stage;
+  const allDone = st >= STAGES.length;
+  const lv = levelCounts(progress);
+  const due = dueCount(progress, now);
+  const path = STAGES.map((s, i) => {
+    const cls = i < st ? 'done' : i === st ? 'now' : '';
+    return `<div class="stop ${cls}" dir="ltr" title="${s.name}">${i < st ? '✓' : s.short}</div>`;
+  }).join('');
+  const stageCard = allDone
+    ? `<div class="card stage-card"><div class="label">כל השלבים נפתחו</div><h2>סיימת את המסלול! 🏆</h2><div class="count">עכשיו כל משימה היא חזרה, כדי שהכול יישאר בזיכרון</div></div>`
+    : `<div class="card stage-card"><div class="label">השלב שלך</div><h2>${STAGES[st].name}</h2>${stageProgressHTML(st)}</div>`;
+  app.innerHTML = `
+    <header class="home-head">
+      <div><h1>לוח הכפל</h1><p class="sub">משימה קצרה בכל יום, ולוח הכפל נכנס לזיכרון</p></div>
+      <div class="head-btns"><button class="icon-btn" data-action="how" aria-label="איך זה עובד">?</button>${muteBtn()}</div>
+    </header>
+    ${goalsHTML(now)}
+    ${done >= DAILY_GOAL
+      ? '<button class="btn board-link" data-action="play">עוד משימה (רשות)</button>'
+      : `<button class="play" data-action="play">${progress.rounds === 0 ? 'בואי נתחיל ▶' : `משימה ${done + 1} מתוך ${DAILY_GOAL} ▶`}</button>`}
+    ${due && done < DAILY_GOAL ? `<div class="due-note">📅 ${due === 1 ? 'תרגיל אחד מחכה' : `${due} תרגילים מחכים`} לחזרה</div>` : ''}
+    <section class="path">${path}</section>
+    ${stageCard}
+    ${progress.rounds > 0 ? '<button class="btn board-link" data-action="board">🔢 הלוח שלי</button>' : ''}
+    ${progress.rounds > 0 ? `<div class="summary"><span>🏆 בשליטה: <b>${lv.mastered}</b></span><span>🌱 בהתחזקות: <b>${lv.strengthening}</b></span><span>📖 בלמידה: <b>${lv.learning}</b></span><span>מתוך 55</span></div>` : ''}
+    ${progress.rounds > 0 ? '<footer><button class="link-btn" data-action="reset">איפוס התקדמות</button></footer>' : ''}`;
+}
+
+// ---------- How it works ----------
+function renderHow() {
+  const first = progress.rounds === 0;
+  const card = (icon, title, body) => `<div class="card how-card"><div class="how-icon">${icon}</div><div><h3>${title}</h3>${body}</div></div>`;
+  app.innerHTML = `
+    ${topBar('איך זה עובד')}
+    <div class="how">
+      ${card('🗓️', `כל יום ${DAILY_GOAL} משימות קצרות`, '<p>כמה דקות ביום, וזה הכול. אם תרצי, אפשר גם יותר.</p>')}
+      ${card('⭐', 'מתי יודעים תרגיל?', `<p>כשעונים עליו נכון ב־${MASTERY_STREAK} ימים שונים. ככה הוא נשאר בזיכרון לתמיד.</p>
+        <div class="chips"><span>היום</span><span>מחר</span><span>אחרי עוד 3 ימים</span><span>אחרי עוד שבוע</span></div>`)}
+      ${card('🔓', 'שלבים מהקל לקשה', '<p>כל שלב לוקח כמה ימים. אין למהר.</p>')}
+      ${card('💛', 'טעות זה בסדר', '<p>התרגיל פשוט יחזור מחר, ואז תכירי אותו טוב יותר.</p>')}
+    </div>
+    <button class="play" data-action="${first ? 'play' : 'home'}">${first ? 'בואי נתחיל ▶' : 'הבנתי'}</button>`;
+  if (!progress.howSeen) { progress.howSeen = true; save(); }
+}
+
+// ---------- Play ----------
+function startPlay() {
+  ui.mode = 'play';
+  ui.round = startRound(progress, Date.now());
+  showScreen('learn');
+  nextQ();
+}
+function startFree(key) {
+  ui.mode = 'free';
+  ui.round = startRound(progress, Date.now(), { freeKey: key });
+  showScreen('learn');
+  nextQ();
+}
+function renderLearn() {
+  const title = ui.mode === 'free' ? 'תרגול חופשי' : STAGES[progress.stage] ? STAGES[progress.stage].name : 'חזרה על כל הלוח';
+  app.innerHTML = `
+    ${topBar(title, ui.mode === 'free' ? 'board' : 'home')}
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="tag" id="tag"></div>
+    <div class="card question" id="qbox"><div class="eq" dir="ltr"><span id="eq"></span> = <span class="answer" id="ans">&nbsp;</span></div></div>
+    <div class="feedback" id="fb" aria-live="polite"></div>
+    <div class="card explain hidden" id="explain" aria-live="polite"></div>
+    <div id="answerArea"><button class="idk" id="idk" data-action="idk">🤔 עוד לא יודעת</button>${keypadHTML()}</div>`;
+}
+function setAnswerView(tagHTML, showIdk) {
+  $('#tag').innerHTML = tagHTML || '';
+  $('#ans').innerHTML = '&nbsp;';
+  $('#fb').innerHTML = '';
+  $('#explain').classList.add('hidden');
+  $('#answerArea').classList.remove('hidden');
+  $('#idk').classList.toggle('hidden', !showIdk);
+  ui.input = '';
+  ui.shownAt = Date.now();
+}
+function nextQ() {
+  const r = ui.round;
+  const q = nextQuestion(r, progress, Date.now());
+  if (!q) return finishPlay();
+  ui.q = q;
+  ui.phase = 'answer';
+  $('#bar').style.width = (ui.mode === 'free' ? 0 : Math.min(100, (r.independent / ROUND_SIZE) * 100)) + '%';
+  $('#eq').textContent = `${q.a} × ${q.b}`;
+  setAnswerView(TAGS[q.cat], q.kind !== 'practice');
+}
+function submit() {
+  if (!ui.input) return;
+  const q = ui.q;
+  const now = Date.now();
+  const ok = +ui.input === q.ans;
+  const ms = now - ui.shownAt;
+  if (ui.phase === 'answer') {
+    answerQuestion(ui.round, progress, q, { correct: ok, ms, now });
+    save();
+    if (ok) {
+      ui.phase = 'wait';
+      flash($('#qbox'), 'flash-good');
+      popStar($('#qbox'));
+      playSound('good');
+      $('#fb').innerHTML = `<span class="good">${pickOne(PRAISE)}</span>`;
+      setT(nextQ, 800);
+    } else {
+      flash($('#qbox'), 'flash-bad');
+      playSound('soft');
+      showHelp(false);
+    }
+  } else if (ui.phase === 'practice') {
+    answerHelpPractice(ui.round, progress, q, { correct: ok, ms, now });
+    save();
+    ui.phase = 'wait';
+    if (ok) {
+      flash($('#qbox'), 'flash-good');
+      playSound('good');
+      $('#fb').innerHTML = `<span class="good">יפה!${ui.mode === 'free' ? '' : ' עוד מעט נחזור אליו שוב.'}</span>`;
+      setT(nextQ, 1300);
+    } else {
+      $('#fb').innerHTML = `<span class="bad">התשובה היא ${eq(q.a, q.b, q.ans)}</span>`;
+      setT(nextQ, 2400);
+    }
+  }
+}
+function dontKnow() {
+  if (ui.phase !== 'answer') return;
+  answerQuestion(ui.round, progress, ui.q, { correct: false, dontKnow: true, ms: Date.now() - ui.shownAt, now: Date.now() });
+  save();
+  showHelp(true);
+}
+function showHelp(dk) {
+  const q = ui.q;
+  ui.phase = 'help';
+  ui.helpDK = dk;
+  ui.helpStep = 1;
+  ui.strategy = strategyFor(q.a, q.b, progress);
+  $('#answerArea').classList.add('hidden');
+  $('#tag').innerHTML = '';
+  $('#ans').textContent = '?';
+  renderHelp();
+}
+function renderHelp() {
+  const q = ui.q, s = ui.strategy;
+  const done = ui.helpStep >= s.steps.length;
+  $('#explain').innerHTML = `
+    <div>${ui.helpDK ? '<b>בואי נלמד אותו יחד</b>' : '<b class="bad">כמעט!</b> <b>בואי נראה איך מחשבים:</b>'}</div>
+    ${strategyHTML(s, q.a, q.b, ui.helpStep)}
+    <div><button class="btn ${done ? 'primary' : ''}" data-action="helpnext">${done ? 'עכשיו את! ✍️' : 'הצעד הבא ←'}</button></div>`;
+  $('#explain').classList.remove('hidden');
+}
+function helpNext() {
+  if (ui.phase !== 'help') return;
+  if (ui.helpStep < ui.strategy.steps.length) { ui.helpStep++; renderHelp(); return; }
+  ui.phase = 'practice';
+  setAnswerView('✍️ עכשיו את: מה התשובה?', false);
+}
+function finishPlay() {
+  if (ui.mode === 'free') return showScreen('board');
+  ui.summary = finishRound(ui.round, progress, Date.now());
+  save();
+  showScreen('results');
+}
+
+// ---------- Results ----------
+function renderResults() {
+  const s = ui.summary;
+  const opened = s.doneStages.length > 0;
+  const today = missionsToday(progress, Date.now());
+  const goalDone = today >= DAILY_GOAL;
+  const lines = [`ענית נכון על <b>${s.correct}</b> מתוך ${s.independent} שאלות`];
+  if (s.strengthened) lines.push(`💪 <b>${s.strengthened}</b> ${s.strengthened === 1 ? 'תרגיל התחזק' : 'תרגילים התחזקו'} היום`);
+  if (s.newMet) lines.push(`✨ הכרת <b>${s.newMet}</b> ${s.newMet === 1 ? 'תרגיל חדש' : 'תרגילים חדשים'}`);
+  if (s.mastered) lines.push(`🏆 <b>${s.mastered}</b> ${s.mastered === 1 ? 'תרגיל עבר' : 'תרגילים עברו'} לשליטה!`);
+  if (s.toReview) lines.push(`🔁 <b>${s.toReview}</b> ${s.toReview === 1 ? 'תרגיל' : 'תרגילים'} נחזור לתרגל בהמשך`);
+  const stage = STAGES[progress.stage];
+  const stageBox = stage
+    ? `<div class="card res-stage"><div class="muted">${opened ? 'השלב החדש' : 'השלב שלך'}: <b>${stage.name}</b></div>${stageProgressHTML(progress.stage)}</div>`
+    : `<div class="card res-stage"><b>כל שמונת השלבים נפתחו! 🏆</b><div class="count">ממשיכים בחזרות כדי שהכול יישאר בזיכרון</div></div>`;
+  app.innerHTML = `
+    <div class="results">
+      <div class="big-top">${opened ? '🎉' : '⭐'}</div>
+      <h2>${opened ? 'פתחת שלב חדש!' : 'סיימת את המשימה!'}</h2>
+      ${opened ? `<p class="muted">${s.doneStages.map((i) => STAGES[i].name).join(', ')}: הושלם</p>` : ''}
+      <p>${goalDone ? '<b class="good">✓ היעד של היום הושלם!</b>' : `<span class="muted">משימה ${today} מתוך ${DAILY_GOAL} היום</span>`}</p>
+      <ul class="res-lines">${lines.map((l) => `<li>${l}</li>`).join('')}</ul>
+      <p class="cheer">${pickOne(CHEERS)}</p>
+      ${stageBox}
+      <div class="res-actions">
+        ${goalDone
+          ? '<button class="btn primary" data-action="home">למסך הבית</button><button class="btn" data-action="play">עוד משימה (רשות)</button>'
+          : '<button class="btn primary" data-action="play">עוד משימה</button><button class="btn" data-action="home">למסך הבית</button>'}
+      </div>
+    </div>`;
+  playSound('win');
+}
+
+// ---------- Board ----------
+function renderBoard() {
+  const lv = levelCounts(progress);
+  let cells = '<div class="cell head corner">×</div>';
+  for (let b = 1; b <= N; b++) cells += `<div class="cell head">${b}</div>`;
+  for (let a = 1; a <= N; a++) {
+    cells += `<div class="cell head">${a}</div>`;
+    for (let b = 1; b <= N; b++) {
+      const lvl = levelOf(peekFact(progress, pairKey(a, b)));
+      cells += `<button class="cell lv-${lvl}" data-action="cell" data-a="${a}" data-b="${b}" aria-label="${a} כפול ${b}, ${LEVEL_NAMES[lvl]}">${a * b}</button>`;
+    }
+  }
+  app.innerHTML = `
+    ${topBar('הלוח שלי')}
+    <div class="summary" style="margin:0 0 12px"><span>🏆 בשליטה: <b>${lv.mastered}</b></span><span>🌱 בהתחזקות: <b>${lv.strengthening}</b></span><span>📖 בלמידה: <b>${lv.learning}</b></span><span>טרם נבדק: <b>${lv.new}</b></span></div>
+    <div class="board" dir="ltr">${cells}</div>
+    <div class="legend">
+      ${['new', 'learning', 'strengthening', 'mastered'].map((l) => `<span><i class="lv-${l}"></i>${LEVEL_NAMES[l]}</span>`).join('')}
+    </div>
+    <p class="board-note">55 תרגילים שונים: <span dir="ltr">7 × 8</span> ו־<span dir="ltr">8 × 7</span> הם אותו תרגיל, ולכן נצבעים יחד</p>
+    <div class="card explain" id="detail" aria-live="polite">${detailHTML()}</div>`;
+  markSelected();
+}
+function detailHTML() {
+  if (!ui.selectedCell) return `<p class="muted">לחצי על משבצת כדי לראות איך מחשבים ולתרגל</p>`;
+  const [a, b] = ui.selectedCell;
+  const f = peekFact(progress, pairKey(a, b));
+  const lvl = levelOf(f);
+  const rt = reviewText(f, Date.now());
+  return `
+    <div class="eq">${eq(a, b, a * b)}</div>
+    <div><span class="lvl lv-${lvl}">${LEVEL_NAMES[lvl]}</span>${rt ? ` <span class="muted">· ${rt}</span>` : ''}</div>
+    ${streakHTML(f)}
+    ${strategyHTML(strategyFor(a, b, progress), a, b)}
+    <button class="btn primary" data-action="free">✍️ לתרגל את התרגיל</button>`;
+}
+// How many of the 4 spaced days are done, and how many are left
+function streakHTML(f) {
+  if (!f.tries) return '';
+  const n = Math.min(f.streak, MASTERY_STREAK);
+  const left = MASTERY_STREAK - n;
+  const text = levelOf(f) === 'mastered'
+    ? 'בשליטה ✓'
+    : `${n ? `ענית נכון ב־${n} מתוך ${MASTERY_STREAK} ימים. ` : ''}${left === 1 ? 'עוד יום אחד' : `עוד ${left} ימים`} והוא בשליטה`;
+  return `<div class="streak-line">${pipsHTML(n, MASTERY_STREAK)}<span>${text}</span></div>`;
+}
+function markSelected() {
+  const s = ui.selectedCell;
+  $$('button.cell').forEach((c) => c.classList.toggle('sel', !!s && +c.dataset.a === s[0] && +c.dataset.b === s[1]));
+}
+
+// ---------- Events ----------
+const renders = { home: renderHome, how: renderHow, learn: renderLearn, results: renderResults, board: renderBoard, tests: renderTests };
+function pressKey(k) {
+  if (ui.screen !== 'learn') return;
+  if (ui.phase === 'help') { if (k === 'ok') helpNext(); return; }
+  if (ui.phase !== 'answer' && ui.phase !== 'practice') return;
+  if (k === 'ok') return submit();
+  if (k === 'del') ui.input = ui.input.slice(0, -1);
+  else if (ui.input.length < 3) ui.input += k;
+  $('#ans').innerHTML = ui.input || '&nbsp;';
+}
+const actions = {
+  home: () => showScreen('home'),
+  play: startPlay,
+  board: () => showScreen('board'),
+  how: () => showScreen('how'),
+  mute: (el) => {
+    progress.muted = !progress.muted;
+    save();
+    el.outerHTML = muteBtn();
+  },
+  key: (el) => pressKey(el.dataset.k),
+  idk: dontKnow,
+  helpnext: helpNext,
+  cell: (el) => {
+    ui.selectedCell = [+el.dataset.a, +el.dataset.b];
+    markSelected();
+    $('#detail').innerHTML = detailHTML();
+  },
+  free: () => startFree(pairKey(...ui.selectedCell)),
+  reset: () => {
+    if (!confirm('למחוק את כל ההתקדמות ולהתחיל מהשלב הראשון? אי אפשר לבטל את זה.')) return;
+    const muted = progress.muted;
+    progress = defaultProgress(Date.now());
+    progress.muted = muted;
+    progress.howSeen = true;
+    save();
+    renderHome();
+  },
+};
+app.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (el && actions[el.dataset.action]) actions[el.dataset.action](el);
+});
+document.addEventListener('keydown', (e) => {
+  if (ui.screen !== 'learn') return;
+  if (/^[0-9]$/.test(e.key)) pressKey(e.key);
+  else if (e.key === 'Backspace') pressKey('del');
+  else if (e.key === 'Enter') { e.preventDefault(); pressKey('ok'); }
+});
+
+/* =====================================================================
+   9. AUTOMATED TESTS — open index.html#test, or call runTests()
+   ===================================================================== */
+function runTests() {
+  const results = [];
+  const test = (name, fn) => {
+    try { fn(); results.push({ name, ok: true }); } catch (e) { results.push({ name, ok: false, err: e.message }); }
+  };
+  const assert = (c, m) => { if (!c) throw new Error(m || 'assertion failed'); };
+  const T0 = new Date(2026, 10, 1, 10, 0).getTime();
+  const day = (n) => addDays(startOfDay(T0), n) + 10 * 3600000;
+  const fresh = () => defaultProgress(T0);
+  const lvl = (p, k) => levelOf(peekFact(p, k));
+  const retrieval = (p, k, correct, now) => recordAttempt(p, k, { kind: 'retrieval', correct, now });
+  // Plays a whole round; answer(q) returns 'right' | 'wrong' | 'idk'
+  function play(p, now, answer, seed = 1) {
+    const rng = mulberry32(seed);
+    const round = startRound(p, now);
+    const log = [];
+    let q, guard = 0;
+    while ((q = nextQuestion(round, p, now, rng)) && guard++ < 60) {
+      log.push(q);
+      const a = answer(q);
+      const res = answerQuestion(round, p, q, { correct: a === 'right', dontKnow: a === 'idk', ms: 3000, now });
+      if (res.needsHelp) answerHelpPractice(round, p, q, { correct: true, ms: 2000, now });
+    }
+    return { round, log, summary: finishRound(round, p, now) };
+  }
+  function validateStrategy(s, a, b) {
+    const known = new Set([a, b]);
+    for (const st of s.steps) {
+      const v = stepValue(st);
+      if (st.t === 'add' || st.t === 'sub') assert(known.has(st.x) && known.has(st.y), `${a}×${b}: operand not derived (${st.x}, ${st.y})`);
+      if (st.t === 'half') assert(known.has(st.x) && st.x % 2 === 0, `${a}×${b}: bad half`);
+      if (st.t === 'sum') assert(st.list.length === Math.min(a, b) && st.list.every((x) => x === Math.max(a, b)), `${a}×${b}: bad sum`);
+      assert(Number.isInteger(v), `${a}×${b}: non-integer step`);
+      known.add(v);
+    }
+    assert(stepValue(s.steps[s.steps.length - 1]) === a * b, `${a}×${b}: final step ≠ ${a * b}`);
+    const rows = s.visual.parts.reduce((t, x) => t + x.n, 0);
+    const counted = s.visual.parts.filter((x) => x.cls !== 'ghost' && x.cls !== 'minus').reduce((t, x) => t + x.n, 0);
+    assert(rows === s.visual.rows, `${a}×${b}: visual rows mismatch`);
+    assert(counted * s.visual.cols === a * b, `${a}×${b}: visual shows ${counted * s.visual.cols}`);
+  }
+
+  test('1. יש בדיוק 55 עובדות, ללא כפילויות, וכל זוג 1–10 ממופה', () => {
+    assert(FACTS.length === 55, `got ${FACTS.length}`);
+    assert(new Set(FACTS).size === 55, 'duplicates');
+    for (let a = 1; a <= 10; a++) for (let b = 1; b <= 10; b++) assert(FACTS.includes(pairKey(a, b)), `${a}×${b} missing`);
+  });
+  test('2. שמונה שלבים בגדלים 19,8,7,6,5,4,3,3 וכל עובדה בשלב אחד', () => {
+    assert(STAGES.length === 8);
+    assert(STAGES.map((s) => s.keys.length).join() === '19,8,7,6,5,4,3,3', STAGES.map((s) => s.keys.length).join());
+    const all = STAGES.flatMap((s) => s.keys);
+    assert(all.length === 55 && new Set(all).size === 55, 'overlap or gap');
+    const stageOf = (k) => STAGES.findIndex((s) => s.keys.includes(k));
+    assert(stageOf('1-7') === 0 && stageOf('7-10') === 0 && stageOf('2-8') === 1 && stageOf('5-9') === 2);
+    assert(stageOf('7-7') === 3 && stageOf('3-8') === 4 && stageOf('4-7') === 5 && stageOf('8-9') === 6 && stageOf('7-8') === 7);
+  });
+  test('3. ‏7×8 ו־8×7 הם אותה עובדה, ושתי הצורות מופיעות', () => {
+    assert(pairKey(7, 8) === pairKey(8, 7));
+    const rng = mulberry32(7);
+    const forms = new Set();
+    for (let i = 0; i < 100; i++) { const q = makeQ('7-8', 'new', rng); forms.add(`${q.a}x${q.b}`); assert(q.ans === 56); }
+    assert(forms.has('7x8') && forms.has('8x7'), [...forms].join());
+  });
+  test('4. תשובה ראשונה נכונה (גם מהירה) לא מעניקה שליטה', () => {
+    const p = fresh();
+    recordAttempt(p, '6-7', { kind: 'retrieval', correct: true, ms: 400, now: day(0) });
+    assert(lvl(p, '6-7') === 'strengthening', lvl(p, '6-7'));
+    assert(peekFact(p, '6-7').due === addDays(startOfDay(T0), 1), 'first review should be tomorrow');
+  });
+  test('5. טעות מובילה להסבר ולחזרה בהמשך הסיבוב, אחרי שאלות אחרות', () => {
+    const p = fresh();
+    let wrongKey = null;
+    const { log } = play(p, day(0), (q) => { if (!wrongKey && q.kind === 'retrieval') { wrongKey = q.key; return 'wrong'; } return 'right'; });
+    const i = log.findIndex((q) => q.key === wrongKey && q.kind === 'retrieval');
+    const j = log.findIndex((q, idx) => idx > i && q.key === wrongKey && q.kind === 'practice');
+    assert(j > i + 1, `retry index ${j}, wrong at ${i}`);
+  });
+  test('6. הצלחה אחרי הסבר לא נחשבת לשליפה עצמאית', () => {
+    const p = fresh();
+    const round = startRound(p, day(0));
+    const q = makeQ('3-4', 'new', mulberry32(1));
+    answerQuestion(round, p, q, { correct: false, dontKnow: true, now: day(0) });
+    answerHelpPractice(round, p, q, { correct: true, now: day(0) });
+    const f = peekFact(p, '3-4');
+    assert(f.correct === 0 && f.practiceCorrect === 1 && f.helped === 1, JSON.stringify(f));
+    assert(lvl(p, '3-4') === 'learning');
+  });
+  test('7. חזרות מרווחות בימים אמיתיים: 1, 3, 7 ימים; שליטה רק ביום 11', () => {
+    const p = fresh();
+    const k = '6-8';
+    retrieval(p, k, true, day(0));
+    retrieval(p, k, true, day(0) + 3600000);
+    assert(peekFact(p, k).streak === 1, 'same-day repeat must not count');
+    retrieval(p, k, true, day(1));
+    assert(peekFact(p, k).streak === 2 && peekFact(p, k).due === addDays(startOfDay(T0), 4), 'second review in 3 days');
+    retrieval(p, k, true, day(2));
+    assert(peekFact(p, k).streak === 2, 'early review must not count');
+    retrieval(p, k, true, day(4));
+    assert(peekFact(p, k).streak === 3 && lvl(p, k) === 'strengthening');
+    retrieval(p, k, true, day(10));
+    assert(lvl(p, k) === 'strengthening', 'not due yet on day 10');
+    retrieval(p, k, true, day(11));
+    assert(lvl(p, k) === 'mastered', lvl(p, k));
+    assert(peekFact(p, k).due === addDays(startOfDay(T0), 25), 'then 14 days');
+  });
+  test('7b. תרגיל שהגיע מועדו נבחר כחזרה ביום המתאים ולא לפני', () => {
+    const p = fresh();
+    p.stage = 2;
+    retrieval(p, '1-3', true, day(0));
+    const cat = (now) => { const c = categorize(startRound(p, now), p, now); return Object.keys(c).find((x) => c[x].includes('1-3')); };
+    assert(cat(day(0) + 3600000) === 'familiar', cat(day(0)));
+    assert(cat(day(1)) === 'due', cat(day(1)));
+  });
+  test('8. טעות בתרגיל שבשליטה מחזקת אותו שוב בלי למחוק היסטוריה', () => {
+    const p = fresh();
+    const k = '7-9';
+    [0, 1, 4, 11].forEach((d) => retrieval(p, k, true, day(d)));
+    assert(lvl(p, k) === 'mastered');
+    retrieval(p, k, false, day(12));
+    const f = peekFact(p, k);
+    assert(lvl(p, k) === 'learning' && f.correct === 4 && f.streak === 2, JSON.stringify(f));
+    assert(f.due === addDays(startOfDay(T0), 13), 'back tomorrow');
+    retrieval(p, k, true, day(13));
+    assert(lvl(p, k) === 'strengthening' && peekFact(p, k).streak === 3);
+    retrieval(p, k, true, day(20));
+    assert(lvl(p, k) === 'mastered');
+  });
+  test('9. תרגיל אחד קשה לא חוסם מעבר שלב', () => {
+    const p = fresh();
+    p.stage = 1;
+    STAGES[1].keys.forEach((k, i) => retrieval(p, k, i !== 0, day(0)));
+    assert(stageStatus(p, 1).passed, JSON.stringify(stageStatus(p, 1)));
+    assert(advanceStages(p).length === 1 && p.stage === 2);
+    assert(lvl(p, STAGES[1].keys[0]) === 'learning', 'weak fact keeps coming back');
+  });
+  test('9b. כל שלב עם 3+ עובדות עובר גם עם תרגיל חלש אחד', () => {
+    STAGES.forEach((s, i) => {
+      const p = fresh();
+      p.stage = i;
+      s.keys.forEach((k, j) => retrieval(p, k, j !== 0, day(0)));
+      assert(stageStatus(p, i).passed, `stage ${i + 1}`);
+    });
+  });
+  test('9c. שלב 1 (19 עובדות) לא מושלם אחרי סיבוב אחד, ומושלם אחרי שניים', () => {
+    const p = fresh();
+    const r1 = play(p, day(0), () => 'right');
+    assert(r1.round.independent <= ROUND_SIZE && p.stage === 0, `stage after 1 round: ${p.stage}`);
+    play(p, day(0) + 600000, () => 'right', 2);
+    assert(p.stage === 1, `stage after 2 rounds: ${p.stage}`);
+  });
+  test('10. כל ההסברים נכונים מתמטית (55 עובדות × 2 כיוונים, עם ובלי ידע קודם)', () => {
+    const known = fresh();
+    FACTS.forEach((k) => { known.facts[k] = { ...blankFact(), tries: 1 }; });
+    for (const k of FACTS) {
+      const [a, b] = keyPair(k);
+      for (const [x, y] of [[a, b], [b, a]]) {
+        validateStrategy(strategyFor(x, y, known), x, y);
+        validateStrategy(strategyFor(x, y, fresh()), x, y);
+      }
+    }
+  });
+  test('10b. אסטרטגיות לדוגמה מהאפיון', () => {
+    const p = fresh();
+    FACTS.forEach((k) => { p.facts[k] = { ...blankFact(), tries: 1 }; });
+    const desc = (a, b) => strategyFor(a, b, p).steps.map((s) => `${s.t}:${s.x ?? ''}:${s.y ?? ''}`).join('|');
+    assert(desc(6, 7) === 'mul:5:7|add:35:7', desc(6, 7));
+    assert(desc(9, 8) === 'mul:10:8|sub:80:8', desc(9, 8));
+    assert(desc(4, 6) === 'mul:2:6|add:12:12', desc(4, 6));
+    assert(desc(7, 8) === 'mul:5:8|mul:2:8|add:40:16', desc(7, 8));
+    assert(strategyFor(6, 7, fresh()).id === 'groups', 'falls back when 5×7 is unknown');
+  });
+  test('11. אותו תרגיל לא מופיע פעמיים ברצף (200 סיבובים אקראיים)', () => {
+    const p = fresh();
+    const rng = mulberry32(99);
+    for (let r = 0; r < 200; r++) {
+      const { log } = play(p, day(Math.floor(r / 3)), () => (rng() < 0.75 ? 'right' : rng() < 0.5 ? 'wrong' : 'idk'), r + 5);
+      for (let i = 1; i < log.length; i++) assert(log[i].key !== log[i - 1].key, `round ${r}: ${log[i].key} twice`);
+    }
+  });
+  test('12. מכסת תרגילים חדשים: 3 למתקשה, יותר רק כשיש עדות לידע', () => {
+    const p1 = fresh();
+    const s1 = play(p1, day(0), () => 'wrong');
+    assert(s1.round.newKeys.size <= NEW_CAP, `struggling got ${s1.round.newKeys.size}`);
+    const p2 = fresh();
+    const s2 = play(p2, day(0), () => 'right');
+    assert(s2.round.newKeys.size >= 8, `knower got ${s2.round.newKeys.size}`);
+    const p3 = fresh();
+    p3.lastAccuracy = 0.4;
+    assert(startRound(p3, day(0)).newCap === NEW_CAP_STRUGGLING);
+  });
+  test('13. אחרי היעדרות: לא יותר מ־5 חזרות בסיבוב, בלי הצפה', () => {
+    const p = fresh();
+    p.stage = 4;
+    FACTS.slice(0, 40).forEach((k) => retrieval(p, k, true, day(0)));
+    assert(dueCount(p, day(10)) === 40);
+    const { log } = play(p, day(10), () => 'right');
+    const dues = log.filter((q) => q.cat === 'due').length;
+    assert(dues <= DUE_CAP && dues > 0, `due in round: ${dues}`);
+  });
+  test('14. סיבוב משלב קשה וקל (לא הכול קשה ולא הכול קל)', () => {
+    const p = fresh();
+    p.stage = 4;
+    FACTS.slice(0, 30).forEach((k) => retrieval(p, k, true, day(0)));
+    FACTS.slice(30, 34).forEach((k) => retrieval(p, k, false, day(0)));
+    const { log } = play(p, day(0) + 3600000, () => 'right');
+    const cats = log.filter((q) => q.kind === 'retrieval').map((q) => q.cat);
+    assert(cats.some((c) => c === 'familiar'), cats.join());
+    assert(cats.some((c) => c === 'new' || c === 'learning'), cats.join());
+  });
+  test('15. תרגול חופשי מהלוח לא משנה רמת שליטה', () => {
+    const p = fresh();
+    const round = startRound(p, day(0), { freeKey: '6-6' });
+    const q = nextQuestion(round, p, day(0));
+    answerQuestion(round, p, q, { correct: true, now: day(0) });
+    assert(lvl(p, '6-6') === 'new' && peekFact(p, '6-6').freeCorrect === 1);
+    assert(nextQuestion(round, p, day(0)) === null);
+  });
+  test('16. שמירה וטעינה (localStorage מדומה) שומרות הכול', () => {
+    const fake = { d: {}, getItem(k) { return this.d[k] ?? null; }, setItem(k, v) { this.d[k] = v; } };
+    const p = fresh();
+    play(p, day(0), () => 'right');
+    saveProgress(fake, p);
+    const back = loadProgress(fake, day(1));
+    assert(JSON.stringify(back) === JSON.stringify(p), 'roundtrip differs');
+    assert(back.version === 3);
+  });
+  test('17. המרה מגרסה 2 שומרת התקדמות קיימת', () => {
+    const fake = { d: {}, getItem(k) { return this.d[k] ?? null; }, setItem(k, v) { this.d[k] = v; } };
+    fake.setItem(V2_KEY, JSON.stringify({ facts: { '3-5': { box: 3, seen: 2 }, '6-7': { box: 1, seen: 1 } }, stage: 4, round: 5, muted: true }));
+    const p = loadProgress(fake, day(0));
+    assert(p.version === 3 && p.stage === 3 && p.rounds === 5 && p.muted === true, JSON.stringify(p));
+    assert(lvl(p, '3-5') === 'strengthening' && lvl(p, '6-7') === 'learning');
+    assert(fake.getItem(V2_KEY) !== null, 'old data kept');
+  });
+  test('18. יעד יומי: כל משימה נספרת ביום שלה', () => {
+    const p = fresh();
+    play(p, day(0), () => 'right');
+    play(p, day(0) + 600000, () => 'right', 2);
+    assert(missionsToday(p, day(0)) === 2, `today: ${missionsToday(p, day(0))}`);
+    assert(missionsToday(p, day(1)) === 0, 'new day starts at 0');
+    play(p, day(1), () => 'right', 3);
+    assert(missionsToday(p, day(1)) === 1 && missionsToday(p, day(0)) === 2);
+  });
+  test('19. יעד שבועי: ראשון עד שבת, יום נספר פעם אחת, ושבוע חדש מתאפס', () => {
+    const p = fresh();
+    const sunday = addDays(startOfDay(T0), -new Date(T0).getDay());
+    const at = (n) => addDays(sunday, n) + 10 * 3600000;
+    const w = weekDays(p, at(3));
+    assert(w.length === 7 && w[0].day === sunday && new Date(w[0].day).getDay() === 0, 'week starts on Sunday');
+    assert(w[3].today && !w[2].future && w[4].future && !w[3].future, 'today and future marked');
+    [0, 0, 1, 2, 4, 5].forEach((d) => logMission(p, at(d)));
+    assert(weekCount(p, at(5)) === 5, `week: ${weekCount(p, at(5))}`);
+    assert(weekCount(p, at(7)) === 0, 'next Sunday starts a new week');
+  });
+  test('20. ימי תרגול: נתונים ישנים נטענים, וימים ישנים מאוד נמחקים', () => {
+    const fake = { d: {}, getItem(k) { return this.d[k] ?? null; }, setItem(k, v) { this.d[k] = v; } };
+    const old = fresh();
+    delete old.playDays;
+    delete old.howSeen;
+    old.lastPlayed = day(0);
+    fake.setItem(STORE_KEY, JSON.stringify(old));
+    const p = loadProgress(fake, day(0));
+    assert(missionsToday(p, day(0)) === 1 && p.howSeen === false, JSON.stringify(p.playDays));
+    logMission(p, day(PLAY_DAYS_KEPT + 5));
+    assert(missionsOn(p, startOfDay(day(0))) === 0, 'old day pruned');
+  });
+  return results;
+}
+function renderTests() {
+  const res = runTests();
+  const passed = res.filter((r) => r.ok).length;
+  app.innerHTML = `
+    ${topBar('בדיקות אוטומטיות')}
+    <h2 class="${passed === res.length ? 'good' : 'bad'}">${passed} מתוך ${res.length} עברו</h2>
+    ${res.map((r) => `<div class="test-row">${r.ok ? '✅' : '❌'} ${r.name}${r.ok ? '' : `<div class="bad">${r.err}</div>`}</div>`).join('')}`;
+}
+
+showScreen(location.hash === '#test' ? 'tests' : progress.howSeen ? 'home' : 'how');
+</script>
+</body>
+</html>

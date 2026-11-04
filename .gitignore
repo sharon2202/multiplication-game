@@ -1,0 +1,10 @@
+# Dependencies (if added later)
+node_modules/
+
+# Personal Claude settings (launch.json is shared and stays tracked)
+.claude/settings.local.json
+
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
